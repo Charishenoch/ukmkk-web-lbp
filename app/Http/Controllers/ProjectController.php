@@ -12,10 +12,12 @@ use Illuminate\Http\Request;
 class ProjectController extends Controller
 {
     // Tampilan Grid Proker
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::all();
-        return view('proker.index', compact('projects'));
+        $type = $request->query('type', 'rkt'); 
+        $projects = Project::where('type', $type)->get();
+        
+        return view('proker.index', compact('projects', 'type'));
     }
 
     // Tampilan Detail Proker (LBP)
@@ -30,8 +32,9 @@ class ProjectController extends Controller
     }
 
     // Tampilan Form Buat Proker
-    public function create()
+    public function create(Request $request)
     {
+        $type = $request->query('type', 'rkt'); // Nangkep tipe dari URL
         // Tetap pake data dummy kalau tabel Sie belum ready, 
         // kalau udah ada tabel sies, ganti jadi Sie::all()
         $defaultSies = [
@@ -41,20 +44,32 @@ class ProjectController extends Controller
             (object)['id' => 4, 'nama' => 'Publikasi'],
         ];
         
-        return view('proker.create', compact('defaultSies'));
+        return view('proker.create', compact('defaultSies','type'));
     }
 
     // Logic Simpan Proker & Kepanitiaan
     public function store(Request $request)
     {
+        // Handle File Upload
+        $flyerPath = null;
+        if ($request->hasFile('flyer')) {
+            $flyerPath = $request->file('flyer')->store('flyers', 'public');
+        }    
+
         // 1. Simpan Proker Utama
         $project = Project::create([
             'nama_proker' => $request->nama_proker,
-            'tanggal' => $request->tanggal,
+            'tanggal'     => $request->tanggal,
+            'type'        => $request->type,
+            'jenis'       => $request->jenis,
+            'departemen'  => $request->departemen,
+            'tempat'      => $request->tempat,
+            'link_lokasi' => $request->link_lokasi,
+            'flyer'       => $flyerPath,
         ]);
 
         // 2. Simpan Kepanitiaan (Hanya yang dicentang)
-        if ($request->has('selected_sie')) {
+        if ($request->type === 'rkt' && $request->has('selected_sie')) {
             foreach ($request->selected_sie as $sieId) {
                 // Ambil joblist untuk Sie ini, kalau kosong kasih array kosong
                 $jobs = $request->joblist[$sieId] ?? [];
@@ -72,7 +87,7 @@ class ProjectController extends Controller
             }
         }
 
-        return redirect()->route('proker.index')->with('success', 'Proker & Joblist berhasil dibuat, lek!');
+        return redirect()->route('proker.index', ['type' => $request->type])->with('success', 'Proker & Joblist berhasil dibuat, lek!');
     }
 
     public function joblist($id)

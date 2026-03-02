@@ -9,12 +9,12 @@
         </ol>
     </nav>
     
-    <h4 class="fw-bold mb-4">RKT (Program Kerja Tahunan)</h4>
+    <h4 class="fw-bold mb-4">{{ strtoupper($type) }} (Program Kerja)</h4>
     
     <div class="row g-4">
         @if(auth()->user()->role == 'superadmin')
         <div class="col-md-4">
-            <a href="{{ route('proker.create') }}" class="text-decoration-none">
+            <a href="{{ route('proker.create', ['type' => $type]) }}" class="text-decoration-none">
                 <div class="card border-dark text-center" style="border-radius: 15px; min-height: 350px; background: #d9d9d9;">
                     <div class="card-header bg-white border-bottom border-dark fw-bold py-3">BUAT PROKER</div>
                     <div class="card-body d-flex align-items-center justify-content-center">

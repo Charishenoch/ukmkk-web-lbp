@@ -11,8 +11,11 @@ class Project extends Model
         'departemen', 
         'tanggal', 
         'flyer', 
+        'type',
+        'tempat',
+        'link_lokasi',
         'status',
-        'kepanitaan',
+        'kepanitiaan',
         'registration_deadline',
         'calculation_type'
     ];    

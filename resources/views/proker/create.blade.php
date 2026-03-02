@@ -2,9 +2,10 @@
 
 @section('content')
 <div class="container-fluid">
-    <h4 class="fw-bold mb-4">BUAT PROKER</h4>
+    <h4 class="fw-bold mb-4">BUAT PROKER {{ strtoupper($type) }}</h4>
     <form action="{{ route('proker.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="type" value="{{ $type }}">
         
         <div class="card p-4 mb-4 border-dark">
             <h5 class="fw-bold mb-3">PROGRAM KERJA</h5>
@@ -43,6 +44,7 @@
             </div>
         </div>
 
+        @if($type === 'rkt')
         <div class="card p-4 mb-4 border-dark">
             <h5 class="fw-bold mb-3">KEPANITIAAN</h5>
             @foreach($defaultSies as $sie)
@@ -61,10 +63,9 @@
             </div>
             @endforeach
         </div>
-
-        <div class="d-flex gap-2">
+        @endif <div class="d-flex gap-2">
             <button type="submit" class="btn btn-success px-5 fw-bold">CREATE</button>
-            <a href="{{ route('proker.index') }}" class="btn btn-secondary px-4">CANCEL</a>
+            <a href="{{ route('proker.index', ['type' => $type]) }}" class="btn btn-secondary px-4">CANCEL</a>
         </div>
     </form>
 </div>

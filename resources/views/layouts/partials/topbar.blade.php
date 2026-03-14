@@ -1,4 +1,4 @@
-<div class="topbar flex items-center justify-between px-8 text-white shadow-lg" style="background: linear-gradient(90deg, #524D71 0%, #1F84DA 100%); height: 70px;">
+<div class="w-full h-full flex items-center justify-between px-8 text-white shadow-lg" style="background: linear-gradient(90deg, #524D71 0%, #1F84DA 100%);">
     <div class="flex items-center gap-3">
         <div class="bg-white/20 p-2 rounded-xl border border-white/30 backdrop-blur-sm">
             <span class="font-black text-xs uppercase">UKM KK</span>

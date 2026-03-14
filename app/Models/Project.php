@@ -29,4 +29,9 @@ class Project extends Model
     {
         return $this->hasMany(JoblistDefault::class);
     }
+
+    public function sies()
+    {
+        return $this->belongsToMany(Sie::class, 'project_kepanitiaan', 'project_id', 'sie_id');
+    }
 }

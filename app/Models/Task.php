@@ -16,6 +16,7 @@ class Task extends Model
         'status',
         'output', 
         'output_score',
+        'keterangan',
         'registration_deadline',
         'is_imported', 
     ];

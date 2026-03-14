@@ -23,11 +23,12 @@ class ProjectController extends Controller
     // Tampilan Detail Proker (LBP)
     public function show(Project $project)
     {
-        $user = auth()->user();
-        $myTasks = Task::where('project_id', $project->id)
-                        ->where('user_id', $user->id)
-                        ->get();
+        // Gunakan query yang cuma ambil unique sie_id untuk project ini
+        $project->load(['sies' => function($query) {
+            $query->distinct('sies.id');
+        }]);
 
+        $myTasks = Task::where('project_id', $project->id)->get();
         return view('proker.show', compact('project', 'myTasks'));
     }
 
@@ -90,10 +91,25 @@ class ProjectController extends Controller
         return redirect()->route('proker.index', ['type' => $request->type])->with('success', 'Proker & Joblist berhasil dibuat, lek!');
     }
 
-    public function joblist($id)
+    public function joblist(Request $request, $id)
     {
-        $project = Project::with('joblistDefaults')->findOrFail($id);
-        return view('proker.joblist', compact('project'));
+        $sieId = $request->query('sie_id');
+        $project = Project::findOrFail($id);
+        
+        // Tarik data tugas dari tabel yang bener (ProjectKepanitiaan)
+        $query = ProjectKepanitiaan::where('project_id', $id);
+        
+        // Kalau URL punya parameter ?sie_id=X, kita filter tugasnya
+        if ($sieId) {
+            $query->where('sie_id', $sieId);
+        }
+        
+        $jobs = $query->get(); // Eksekusi query
+        
+        // Ambil nama Sie buat ditampilin cantik di header (kalau ada sie yang dipilih)
+        $selectedSie = $sieId ? Sie::find($sieId) : null;
+
+        return view('proker.joblist', compact('project', 'jobs', 'selectedSie'));
     }
 
     public function pickJob(Request $request, $id)
@@ -101,19 +117,23 @@ class ProjectController extends Controller
         $request->validate(['selected_jobs' => 'required|array']);
 
         foreach ($request->selected_jobs as $jobId) {
-            $defaultJob = JoblistDefault::findOrFail($jobId);
+            // Ambil detail tugas dari tabel ProjectKepanitiaan
+            $kepanitiaanJob = ProjectKepanitiaan::findOrFail($jobId);
             
             Task::create([
                 'project_id' => $id,
                 'user_id' => auth()->id(),
-                'pemberi_tugas' => 'Admin System (Default)',
-                'deskripsi_tugas' => $defaultJob->deskripsi_tugas,
+                'pemberi_tugas' => 'Admin System',
+                'deskripsi_tugas' => $kepanitiaanJob->deskripsi_tugas, // Ngambil dari sini
                 'deadline' => now()->addDays(7),
                 'status' => 'PENGERJAAN',
                 'is_imported' => true
             ]);
         }
 
-        return redirect()->route('proker.show', $id)->with('success', 'Tugas berhasil di-pick!');
+        return redirect()->route('proker.show', [
+            'project' => $id,
+            'sie_id' => $request->sie_id
+        ])->with('success', 'Tugas berhasil di-pick!');
     }
 }

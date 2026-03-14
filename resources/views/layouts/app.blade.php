@@ -16,39 +16,46 @@
 
     <style>
         body { font-family: 'Figtree', sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; }
-        .sidebar { width: 260px; height: 100vh; background-color: #1a1a1a; position: fixed; left: 0; top: 0; z-index: 100; }
         
+        /* 1. TOPBAR FULL WIDTH DI ATAS */
+        .topbar-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 70px; z-index: 200; }
+        
+        /* 2. SIDEBAR DI BAWAH TOPBAR */
+        .sidebar { width: 260px; height: calc(100vh - 70px); background-color: #1a1a1a; position: fixed; left: 0; top: 70px; z-index: 100; overflow-y: auto; }
+        
+        /* 3. MAIN CONTENT MINGGIR & TURUN */
         .main-content { 
             margin-left: 260px; 
+            padding-top: 70px; /* Jarak biar konten gak ketutup topbar */
             min-height: 100vh; 
             display: flex; 
             flex-direction: column;
-            /* Pastikan lebar benar-benar presisi sisa layar */
             width: calc(100% - 260px); 
         }
         
-        /* Hilangkan overflow-x hidden jika ingin fleksibel, atau tetap gunakan untuk prevent horizontal scroll */
+        [x-cloak] { display: none !important; }
         main { flex: 1; overflow-x: hidden; width: 100%; }
-
-        {{-- Tambahan agar row Bootstrap di dalam yield tidak terbatas --}}
         .content-wrapper { width: 100%; max-width: 100%; }
     </style>
 </head>
-<body x-data="{ prokerOpen: false }">
+<body x-data="{ prokerOpen: window.location.pathname.includes('/proker') }">
+    
+    <div class="topbar-wrapper">
+        @include('layouts.partials.topbar')
+    </div>
+
     <div class="sidebar">
         @include('layouts.partials.sidebar')
     </div>
 
     <div class="main-content">
-        @include('layouts.partials.topbar')
-        
-        {{-- Padding disesuaikan agar tidak terlalu sempit --}}
         <main class="p-6 md:p-8 lg:p-10">
-            {{-- Ganti container-fluid dengan div biasa yang full width --}}
             <div class="content-wrapper">
                 @yield('content')
             </div>
         </main>
     </div>
+    
+    @stack('scripts')
 </body>
 </html>

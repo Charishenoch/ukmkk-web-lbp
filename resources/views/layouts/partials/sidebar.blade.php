@@ -1,6 +1,6 @@
-<div class="p-4">
+<div class="p-4 pt-6">
     {{-- Label Dashboard View --}}
-    <div class="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em] mb-10 pl-2 italic">
+    <div class="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em] mb-6 pl-2 italic">
         Dashboard View
     </div>
     
@@ -18,8 +18,15 @@
                 <span class="flex items-center">
                     <i class="bi bi-journal-text mr-3 text-lg"></i> PROKER
                 </span>
-                <i class="bi bi-chevron-down text-[10px] transition-transform duration-300" 
-                   :class="prokerOpen ? 'rotate-180 text-[#E8D621]' : ''"></i>
+                <i class="bi bi-chevron-down text-[10px] transform origin-center" 
+                    x-data="{ isInitialLoad: true }"
+                    x-init="setTimeout(() => isInitialLoad = false, 100)"
+                    :class="{ 
+                        'scale-y-[-1] text-[#E8D621]': prokerOpen, 
+                        'scale-y-100': !prokerOpen,
+                        'transition-transform duration-300': !isInitialLoad 
+                    }">
+                </i>
             </button>
             
             {{-- Isi Dropdown (RKT & NON-RKT) --}}
@@ -28,12 +35,16 @@
                  x-transition:enter-start="opacity-0 transform -translate-y-2"
                  x-transition:enter-end="opacity-100 transform translate-y-0"
                  x-transition:leave="transition ease-in duration-150"
+                 x-cloak 
+                 x-data="{ isInitialLoad: true }"
+                 x-init="setTimeout(() => isInitialLoad = false, 100)"
+                 :class="isInitialLoad ? 'duration-0' : ''"
                  class="mt-2 ml-9 space-y-2 border-l-2 border-white/5 pl-4">
                 
-                <a href="{{ route('proker.index', ['type' => 'rkt']) }}" 
-                class="block py-1.5 text-[10px] font-black text-gray-500 hover:text-[#E8D621] hover:no-underline uppercase tracking-widest transition-colors flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-current rounded-full"></span>
-                    Kegiatan RKT
+               <a href="{{ route('proker.index', ['type' => 'rkt']) }}" 
+                    class="block py-1.5 text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2 {{ request()->query('type') == 'rkt' ? 'text-[#E8D621]' : 'text-gray-500 hover:text-[#E8D621]' }}">
+                        <span class="w-1.5 h-1.5 bg-current rounded-full"></span>
+                        Kegiatan RKT
                 </a>
                 
                 <a href="{{ route('proker.index', ['type' => 'non-rkt']) }}" 
@@ -55,7 +66,7 @@
         </a>
     </nav>
 
-    {{-- Logout Section (Opsional tapi berguna) --}}
+    {{-- Logout Section --}}
     <div class="mt-20 pt-10 border-t border-white/5">
         <form method="POST" action="{{ route('logout') }}">
             @csrf

@@ -131,19 +131,29 @@
 @push('scripts')
 <script>
     document.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('btn-tambah-sel')) {
-            const sieId = e.target.getAttribute('data-sie-id');
-            const wrapper = document.querySelector(`#sie-card-${sieId} .joblist-wrapper`);
+        // Cari tombol yang diklik (handle kalau icon yang diklik pake .closest)
+        const btn = e.target.closest('.btn-tambah-sel');
+        
+        if (btn) {
+            // Langsung cari wrapper di dalam container tombol ini
+            // btn.parentElement adalah div container tombol itu
+            // btn.previousElementSibling adalah div.joblist-wrapper
+            const container = btn.parentElement;
+            const wrapper = container.querySelector('.joblist-wrapper');
             
-            const divBaru = document.createElement('div');
-            divBaru.className = 'animate-fadeIn';
-            divBaru.innerHTML = `
-                <input type="text" name="joblist[${sieId}][]" 
-                       class="w-full rounded-xl border-none bg-white py-3.5 px-4 text-[11px] font-bold text-[#524D71] shadow-sm placeholder-gray-300 mb-3" 
-                       placeholder="Joblist baru...">
-            `;
+            // Ambil sieId dari data attribute
+            const sieId = btn.getAttribute('data-sie-id');
             
-            wrapper.appendChild(divBaru);
+            if (wrapper) {
+                const divBaru = document.createElement('div');
+                divBaru.className = 'animate-fadeIn';
+                divBaru.innerHTML = `
+                    <input type="text" name="joblist[${sieId}][]" 
+                           class="w-full rounded-xl border-none bg-white py-3.5 px-4 text-[11px] font-bold text-[#524D71] shadow-sm placeholder-gray-300 mb-3" 
+                           placeholder="Joblist baru...">
+                `;
+                wrapper.appendChild(divBaru);
+            }
         }
     });
 </script>

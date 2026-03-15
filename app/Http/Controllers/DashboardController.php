@@ -41,4 +41,29 @@ class DashboardController extends Controller
 
         return view('dashboard_user', compact('user', 'totalPoin', 'countPdm', 'countRkt', 'reminderDekatDL', 'reminderSudahDL'));
     }
+
+    public function adminIndex()
+    {
+        if (auth()->user()->email !== 'admin@ukmkk.org') {
+            return redirect()->route('dashboard');
+        }
+
+        $aktifProker = \App\Models\Project::where('status', 'AKTIF')->get(); 
+        
+        // Ambil data lengkap proker RKT & Non-RKT
+        $listRkt = \App\Models\Project::where('type', 'rkt')->get();
+        $listNonRkt = \App\Models\Project::where('type', 'non-rkt')->get();
+
+        // Hitung totalnya
+        $totalRkt = $listRkt->count();
+        $totalNonRkt = $listNonRkt->count();
+
+        return view('dashboard_admin', compact(
+            'aktifProker', 
+            'listRkt', 
+            'listNonRkt',
+            'totalRkt', 
+            'totalNonRkt'
+        ));
+    }
 }

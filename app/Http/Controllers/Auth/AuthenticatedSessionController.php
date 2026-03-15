@@ -28,6 +28,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // --- TAMBAHAN LOGIKA ADMIN OTOMATIS ---
+        // Kamu bisa ganti email di bawah ini dengan email admin pilihanmu
+        $adminEmail = 'admin@ukmkk.org'; 
+
+        if ($request->email === $adminEmail) {
+            // Jika yang login adalah email admin, arahkan ke rute admin
+            // Pastikan kamu nanti buat route dengan nama 'admin.dashboard'
+            return redirect()->intended(route('dashboard_admin')); 
+            // Note: Kalau nanti kamu buat halaman khusus admin, ganti 'dashboard' jadi 'admin.dashboard'
+        }
+        // --- END LOGIKA ADMIN ---
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
